@@ -17,12 +17,15 @@ class e2e_crc {
             const uint8_t _start_value = 0x00U);
     static uint32_t calculate_profile_04(buffer_view _buffer_view,
             const uint32_t _start_value = 0x00000000U);
+    static uint64_t calculate_profile_07(buffer_view _buffer_view,
+            const uint64_t _start_value = 0x0000000000000000U);
 
     static uint32_t calculate_profile_custom(buffer_view _buffer_view);
 
   private:
     static const uint8_t  lookup_table_profile_01_[256];
     static const uint32_t lookup_table_profile_04_[256];
+    static const uint64_t lookup_table_profile_07_[256];
     static const uint32_t lookup_table_profile_custom_[256];
 
 };

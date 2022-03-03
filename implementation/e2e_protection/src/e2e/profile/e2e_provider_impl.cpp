@@ -18,6 +18,10 @@
 #include "../../../../e2e_protection/include/e2e/profile/profile04/profile_04.hpp"
 #include "../../../../e2e_protection/include/e2e/profile/profile04/protector.hpp"
 
+#include "../../../../e2e_protection/include/e2e/profile/profile07/checker.hpp"
+#include "../../../../e2e_protection/include/e2e/profile/profile07/profile_07.hpp"
+#include "../../../../e2e_protection/include/e2e/profile/profile07/protector.hpp"
+
 #include "../../../../e2e_protection/include/e2e/profile/profile_custom/checker.hpp"
 #include "../../../../e2e_protection/include/e2e/profile/profile_custom/profile_custom.hpp"
 #include "../../../../e2e_protection/include/e2e/profile/profile_custom/protector.hpp"
@@ -79,6 +83,11 @@ bool e2e_provider_impl::add_configuration(std::shared_ptr<cfg::e2e> config)
 
     if (config->profile == "P04") {
         process_e2e_profile<profile04::profile_config, profile04::profile_04_checker, profile04::protector>(config);
+        return true;
+    }
+
+    if (config->profile == "P07") {
+        process_e2e_profile<profile07::profile_config, profile07::profile_07_checker, profile07::protector>(config);
         return true;
     }
 
@@ -166,6 +175,31 @@ e2e_provider_impl::make_e2e_profile_config(const std::shared_ptr<cfg::e2e> &_con
             "max_delta_counter", uint16_t(0xffff));
 
     return e2e::profile04::profile_config(data_id, offset,
+            min_data_length, max_data_length, max_delta_counter);
+}
+
+template<>
+vsomeip_v3::e2e::profile07::profile_config
+e2e_provider_impl::make_e2e_profile_config(const std::shared_ptr<cfg::e2e> &_config) {
+
+    uint32_t data_id = read_value_from_config<uint32_t>(_config, "data_id");
+
+    uint32_t offset = read_value_from_config<uint32_t>(_config, "crc_offset");
+    if (offset % 8)
+        VSOMEIP_ERROR << "Offset in E2E P07 configuration must be multiple of 8"
+            " (" << offset << ")";
+    offset /= 8;
+
+    uint32_t min_data_length = read_value_from_config<uint32_t>(_config,
+            "min_data_length", 0);
+
+    uint32_t max_data_length = read_value_from_config<uint32_t>(_config,
+            "max_data_length", uint32_t(0xffffffff));
+
+    uint32_t max_delta_counter = read_value_from_config<uint32_t>(_config,
+            "max_delta_counter", uint32_t(0xffffffff));
+
+    return e2e::profile07::profile_config(data_id, offset,
             min_data_length, max_data_length, max_delta_counter);
 }
 
